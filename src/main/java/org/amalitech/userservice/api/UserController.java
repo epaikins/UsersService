@@ -5,6 +5,7 @@ import java.util.stream.Collectors;
 
 import org.amalitech.userservice.dtos.UserDTO;
 import org.amalitech.userservice.entity.User;
+import org.amalitech.userservice.errors.exceptions.NotFoundException;
 import org.amalitech.userservice.service.UserService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -73,12 +74,16 @@ public class UserController {
 		return ResponseEntity.ok().body(UserResponse);
 	}
 
-	@GetMapping("/user")
-	public ResponseEntity<UserDTO> getUserByName(@RequestParam String name) {
-		User user = userService.getUserByName(name);
-		UserDTO UserResponse = modelMapper.map(user, UserDTO.class);
+	@GetMapping(path = "/user", params = "username")
+	public ResponseEntity<?> getUserByName(@RequestParam("username") String name) {
+		try {
+			User user = userService.getUserByName(name);
+			UserDTO UserResponse = modelMapper.map(user, UserDTO.class);
 
-		return ResponseEntity.ok().body(UserResponse);
+			return ResponseEntity.ok().body(UserResponse);
+		} catch (Exception e) {
+			return ResponseEntity.badRequest().body(new NotFoundException("User with name " + name + " was not found"));
+		}
 	}
 
 	@PostMapping("/user")
