@@ -20,96 +20,78 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-
 @RestController
 @RequestMapping("/api")
 public class UserController {
-	
+
 	@Autowired
 	private UserService userService;
-	
+
 	@Autowired
 	private ModelMapper modelMapper;
-	
+
 	@GetMapping("/users")
 	public List<UserDTO> getAllUsers() {
 
 		return userService.getAllUsers().stream().map(user -> modelMapper.map(user, UserDTO.class))
 				.collect(Collectors.toList());
 	}
-	
-//	@GetMapping("/users/department/{id}")
-//	public List<UserDTO> getAllUsersByDepartmentId(@PathVariable(name = "id") Integer id) {
-//
-//		return userService.getAllUsersByDepartmentId(id).stream().map(user -> modelMapper.map(user, UserDTO.class))
-//				.collect(Collectors.toList());
-//	}
-	
-	@GetMapping("/users/department/{department}")
-	public List<UserDTO> getAllUsersByDepartmentName(@PathVariable(name = "department") String name) {
 
+	@GetMapping(path = "/users", params = "departmentId")
+	public List<UserDTO> getAllUsersByDepartmentId(@RequestParam(name = "departmentId") Integer id) {
+
+		return userService.getAllUsersByDepartmentId(id).stream().map(user -> modelMapper.map(user, UserDTO.class))
+				.collect(Collectors.toList());
+	}
+
+	@GetMapping(path = "/users", params = "departmentName")
+	public List<UserDTO> getAllUsersByDepartmentName(@RequestParam(name = "departmentName") String name) {
+		System.out.println(name);
 		return userService.getAllUsersByDepartmentName(name).stream().map(user -> modelMapper.map(user, UserDTO.class))
 				.collect(Collectors.toList());
 	}
-	
-	@GetMapping("/users/usergroup/{usergroup}")
-	public List<UserDTO> getAllUsersByUserGroupName(@PathVariable(name = "usergroup") String name) {
+
+	@GetMapping(path = "/users", params = "usergroupId")
+	public List<UserDTO> getAllUsersByUserGroupId(@RequestParam(name = "usergroupId") Integer id) {
+
+		return userService.getAllUsersByUserGroupId(id).stream().map(user -> modelMapper.map(user, UserDTO.class))
+				.collect(Collectors.toList());
+	}
+
+	@GetMapping(path = "/users", params = "usergroupName")
+	public List<UserDTO> getAllUsersByUserGroupName(@RequestParam(name = "usergroupName") String name) {
 
 		return userService.getAllUsersByUserGroupName(name).stream().map(user -> modelMapper.map(user, UserDTO.class))
 				.collect(Collectors.toList());
 	}
-	
+
 	@GetMapping("/user/{id}")
 	public ResponseEntity<UserDTO> getUserById(@PathVariable(name = "id") Integer id) {
 		User user = userService.getUser(id);
-
-		// convert entity to DTO
 		UserDTO UserResponse = modelMapper.map(user, UserDTO.class);
 
 		return ResponseEntity.ok().body(UserResponse);
 	}
-	
+
 	@GetMapping("/user")
-	public ResponseEntity<UserDTO> getUserById(@RequestParam String name) {
-		System.out.println(name);
-		System.out.println(name.getClass().getName());
+	public ResponseEntity<UserDTO> getUserByName(@RequestParam String name) {
 		User user = userService.getUserByName(name);
-		System.out.println(user.getName());
-		// convert entity to DTO
 		UserDTO UserResponse = modelMapper.map(user, UserDTO.class);
 
 		return ResponseEntity.ok().body(UserResponse);
 	}
-	
-	
-	
+
 	@PostMapping("/user")
 	public ResponseEntity<User> createUser(@RequestBody UserDTO userDTO) {
-		// convert DTO to entity
-		
-		
 		User userRequest = modelMapper.map(userDTO, User.class);
-//		Department department  = new Department(userDTO.getDepartmentId());
-		
-//		User userRequest = new User(UserDTO.getName(),UserDTO.getEmail(),UserDTO.getDepartmentId());
 		User user = this.userService.createUser(userRequest);
-
-		// convert entity to DTO
-//		UserDTOResponse userResponse = new UserDTOResponse(userDTO.getName(), userDTO.getEmail(), userDTO.getDepartment().getId());
-
 		return new ResponseEntity<User>(user, HttpStatus.CREATED);
-//		return new ResponseEntity<User>(userRequest, HttpStatus.CREATED);
 	}
-	
+
 	@PutMapping("/user/{id}")
 	public ResponseEntity<UserDTO> updateUser(@PathVariable Integer id, @RequestBody UserDTO UserDTO) {
-
-		// convert DTO to Entity
 		User userRequest = modelMapper.map(UserDTO, User.class);
-
 		User user = userService.updateUser(id, userRequest);
-
-		// entity to DTO
 		UserDTO userResponse = modelMapper.map(user, UserDTO.class);
 
 		return ResponseEntity.ok().body(userResponse);
@@ -118,7 +100,7 @@ public class UserController {
 	@DeleteMapping("/user/{id}")
 	public ResponseEntity<Void> deletePost(@PathVariable(name = "id") Integer id) {
 		userService.deleteUser(id);
-		
+
 		return ResponseEntity.noContent().build();
 	}
 
