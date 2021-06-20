@@ -10,6 +10,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -20,22 +21,23 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
+@CrossOrigin
 @RequestMapping("/api")
 public class UserGroupController {
-	
+
 	@Autowired
 	private UserGroupService userGroupService;
-	
+
 	@Autowired
 	private ModelMapper modelMapper;
-	
+
 	@GetMapping("/usergroups")
 	public List<UserGroupDTO> getAllUserGroups() {
 
-		return userGroupService.getAllUserGroups().stream().map(userGroup -> modelMapper.map(userGroup, UserGroupDTO.class))
-				.collect(Collectors.toList());
+		return userGroupService.getAllUserGroups().stream()
+				.map(userGroup -> modelMapper.map(userGroup, UserGroupDTO.class)).collect(Collectors.toList());
 	}
-	
+
 	@GetMapping("/usergroup/{id}")
 	public ResponseEntity<UserGroupDTO> getDepartmentById(@PathVariable(name = "id") Integer id) {
 		UserGroup department = userGroupService.getUserGroup(id);
@@ -45,7 +47,7 @@ public class UserGroupController {
 
 		return ResponseEntity.ok().body(departmentResponse);
 	}
-	
+
 	@PostMapping("/usergroup")
 	public ResponseEntity<UserGroupDTO> createDepartment(@RequestBody UserGroupDTO userGroupDTO) {
 
@@ -59,9 +61,10 @@ public class UserGroupController {
 
 		return new ResponseEntity<UserGroupDTO>(departmentResponse, HttpStatus.CREATED);
 	}
-	
+
 	@PutMapping("/usergroup/{id}")
-	public ResponseEntity<UserGroupDTO> updateDepartment(@PathVariable Integer id, @RequestBody UserGroupDTO userGroupDTO) {
+	public ResponseEntity<UserGroupDTO> updateDepartment(@PathVariable Integer id,
+			@RequestBody UserGroupDTO userGroupDTO) {
 
 		// convert DTO to Entity
 		UserGroup departmentRequest = modelMapper.map(userGroupDTO, UserGroup.class);
@@ -77,7 +80,7 @@ public class UserGroupController {
 	@DeleteMapping("/usergroup/{id}")
 	public ResponseEntity<Void> deletePost(@PathVariable(name = "id") Integer id) {
 		userGroupService.deleteUserGroup(id);
-		
+
 		return ResponseEntity.noContent().build();
 	}
 }

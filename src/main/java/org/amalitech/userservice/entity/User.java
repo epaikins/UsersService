@@ -1,6 +1,6 @@
 package org.amalitech.userservice.entity;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -23,25 +23,27 @@ public class User {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int id;
-	
+
 	private String name;
-	
+
 	@Column(unique = true)
 	private String email;
-	
+
+	private String password;
+
 	@ManyToOne
 	@JoinColumn(name = "department_id")
 	private Department department;
-	
+
 	@ManyToOne
 	@JoinColumn(name = "usergroup_id")
 	private UserGroup usergroup;
-	
+
 	@JsonIgnore
 	@CreationTimestamp
-	private LocalDateTime createdAt;
-	
+	private LocalDate createdAt;
+
 	@JsonIgnore
 	@UpdateTimestamp
-	private LocalDateTime updatedAt;
+	private LocalDate updatedAt;
 }

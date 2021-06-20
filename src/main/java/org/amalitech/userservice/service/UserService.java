@@ -100,6 +100,10 @@ public class UserService {
 			User.setEmail(UserRequest.getEmail());
 		}
 
+		if (UserRequest.getPassword() != null) {
+			User.setPassword(UserRequest.getPassword());
+		}
+
 		if (UserRequest.getDepartment() != null) {
 			User.setDepartment(UserRequest.getDepartment());
 		}
@@ -112,9 +116,13 @@ public class UserService {
 	}
 
 	public void deleteUser(Integer id) {
-		User User = userRepository.findById(id).orElseThrow(() -> new NotFoundException(errorMessage));
+		User user = userRepository.findById(id).orElseThrow(() -> new NotFoundException(errorMessage));
 
-		userRepository.delete(User);
+		userRepository.delete(user);
+	}
+
+	public User getUserByEmailAndPassword(String userEmail, String password) {
+		return userRepository.findByEmailAndPassword(userEmail, password);
 	}
 
 }

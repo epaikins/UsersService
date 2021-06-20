@@ -11,6 +11,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -22,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
+@CrossOrigin
 @RequestMapping("/api")
 public class UserController {
 
@@ -91,6 +93,22 @@ public class UserController {
 		User userRequest = modelMapper.map(userDTO, User.class);
 		User user = this.userService.createUser(userRequest);
 		return new ResponseEntity<User>(user, HttpStatus.CREATED);
+	}
+
+	@PostMapping("/user/login")
+	public User loginUser(@RequestBody UserDTO userDTO) throws Exception {
+		String tempEmail = userDTO.getEmail();
+		String tempPassword = userDTO.getPassword();
+		User user = null;
+
+		if (tempEmail != "" && tempPassword != "") {
+			user = this.userService.getUserByEmailAndPassword(tempEmail, tempPassword);
+		}
+		if (user == null) {
+			throw new Exception("Bad Credentials");
+		}
+
+		return user;
 	}
 
 	@PutMapping("/user/{id}")
